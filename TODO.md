@@ -12,3 +12,23 @@
 - 大众第三屏 42 张, 20条数据
 - 大众第三屏 40 张, 20条数据
 - 大众第三屏 41 张, 20条数据
+
+## 图片使用
+
+### 原生部分
+
+- Android-Universal-Image-Loader 开源图片加载框架
+- Facebook Fresco 开源图片加载框架
+- Glide 开源图片加载框架
+- Photoview 开源图片库
+
+### RN 部分
+
+- [RN使用FastImage组件](https://zhishi.autohome.com.cn/home/teamplace/file?targetId=102269143)
+- [RN使用Native图片加载控件API AHRNImageView](https://zhishi.autohome.com.cn/home/teamplace/file?targetId=84444457)
+- ReactNative 自带 Image 组件
+    - 默认情况下, Android 是不支持 GIF 和 WebP 格式的, 需要在 `android/app/build.gradle` 文件中手动添加对应模块
+    - https://reactnative.cn/docs/images
+- ReactNative 自带 ImageBackground 组件
+    - 内部实现很简单, 其实就是基于 ReactNative 自带 Image 组件, 加上绝对定位, 实现了背景图片的效果
+- 自行封装, 添加裁切, WebP, PNG, 倍图, 并发控制等支持

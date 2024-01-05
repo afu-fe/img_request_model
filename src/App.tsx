@@ -3,9 +3,10 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-import { data } from './data/data'
+import { getImageData } from './data/data'
+import { AutoRnImage } from './components/image/AutoRnImage'
 
-console.log(data)
+console.log(getImageData())
 
 function App() {
   const [count, setCount] = useState(0)
@@ -21,6 +22,9 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
+      <div className="card">
+        <AutoRnImage imgUrl="https://pic-b.autoimg.cn/www2.autoimg.cn/chejiahaodfs/g28/M03/BC/15/300x0_q87_autohomecar__CjIFVGWQJHeAZyILAAGutXeasw8492.png.webp?biztype=14&bizid=14261595&verison=20231112" />
+      </div>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
