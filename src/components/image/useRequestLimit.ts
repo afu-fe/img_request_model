@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const store = {
   queue: {
@@ -18,7 +18,7 @@ type TQueueItem = {
   cb: () => void;
 }
 
-function onLoadStart(url: string, cb: () => void) {
+function onRequestAllowed(url: string, cb: () => void) {
   const domain = url.split('/')[2]
   const queue = (store.queue as Record<string, TQueueItem[]>)[domain]
   const config = store.config.find(item => item.name === domain)
@@ -49,23 +49,43 @@ function handleQueue() {
 
 }
 
+function pushToQueue(url: string) {
+  const domain = url.split('/')[2]
+  const queue = (store.queue as Record<string, TQueueItem[]>)[domain]
+  const config = store.config.find(item => item.name === domain)
+
+  if (config) {
+    queue.push({ key: url, cb: () => {} })
+  }
+}
+
 export function useRequestLimit(url: string) {
   // 当前图片进入队列时间
   // 当前图片请求开始时间, 当前图片请求结束时间
+  const [isStarted, setIsStarted] = useState(false)
 
-  const [state, setState] = useState(false)
+  const onLoadEnd = useCallback(() => {
+    // 当前图片请求结束时间
+    console.log('onLoadEnd', url, Date.now())
+  }, [url])
 
   useEffect(() => {
-    onLoadStart(url, () => {
-      setState(true)
+    // TODO 添加到队列
+    pushToQueue(url)
+
+    // TODO 监听请求开始
+    onRequestAllowed(url, () => {
+      // TODO 记录开始时间
+      setIsStarted(true)
     })
 
     return () => {
-      // offLoadStart
+      // TODO offLoadStart 从队列中移除?
     }
   }, [url])
 
   return {
-    state,
+    isStarted,
+    onLoadEnd,
   }
 }
