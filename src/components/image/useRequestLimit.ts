@@ -1,91 +1,206 @@
-import { useCallback, useEffect, useState } from "react";
-
-const store = {
-  queue: {
-    'pic-a.autoimg.cn': [{ key: 'https://pic-a.autoimg.cn/xxx.jpg', cb: () => {} }],
-    'pic-b.autoimg.cn': [{ key: 'https://pic-b.autoimg.cn/xxx.jpg', cb: () => {} }],
-    'pic-c.autoimg.cn': [{ key: 'https://pic-c.autoimg.cn/xxx.jpg', cb: () => {} }],
-  },
-  config: [
-    { type: 'domain', name: 'pic-a.autoimg.cn', limit: 20 },
-    { type: 'domain', name: 'pic-b.autoimg.cn', limit: 10 },
-    { type: 'domain', name: 'pic-c.autoimg.cn', limit: 5 },
-  ],
-}
+import { useMemo, useState } from "react";
 
 type TQueueItem = {
-  key: string;
+  requestId: string;
   cb: () => void;
+  // promise: Promise<unknown>;
+  // resolve: (value: unknown) => void;
+  // reject: () => void;
 }
 
-function onRequestAllowed(url: string, cb: () => void) {
-  const domain = url.split('/')[2]
-  const queue = (store.queue as Record<string, TQueueItem[]>)[domain]
-  const config = store.config.find(item => item.name === domain)
-
-  if (config && queue.length >= config.limit) {
-    queue.push({ key: url, cb })
-  } else {
-    // 可以直接触发
-    // setTimeout(() => cb(), 0)
-    cb()
-  }
+type TQueueInfo = {
+  max: number;
+  current: number;
+  name: string;
+  queue: TQueueItem[];
+  processing: boolean;
 }
 
-function handleQueue() {
-  const queue = store.queue as Record<string, TQueueItem[]>
-  const config = store.config
+const queueStore: Record<TQueueInfo['name'], TQueueInfo> = {}
 
-  config.forEach(item => {
-    const { name, limit } = item
-    const queueItem = queue[name]
-
-    if (queueItem.length >= limit) {
-      const { key, cb } = queueItem.shift() as TQueueItem
-      // setTimeout(() => cb(), 0)
-      cb()
+export function createRequestQueue(name: string, max: number) {
+  // 初次创建队列
+  if (!queueStore[name]) {
+    queueStore[name] = {
+      max,
+      current: 0,
+      name,
+      queue: [],
+      processing: false,
     }
-  })
-
-}
-
-function pushToQueue(url: string) {
-  const domain = url.split('/')[2]
-  const queue = (store.queue as Record<string, TQueueItem[]>)[domain]
-  const config = store.config.find(item => item.name === domain)
-
-  if (config) {
-    queue.push({ key: url, cb: () => {} })
   }
-}
 
-export function useRequestLimit(url: string) {
-  // 当前图片进入队列时间
-  // 当前图片请求开始时间, 当前图片请求结束时间
-  const [isStarted, setIsStarted] = useState(false)
+  const queueInfo = queueStore[name]
 
-  const onLoadEnd = useCallback(() => {
-    // 当前图片请求结束时间
-    console.log('onLoadEnd', url, Date.now())
-  }, [url])
-
-  useEffect(() => {
-    // TODO 添加到队列
-    pushToQueue(url)
-
-    // TODO 监听请求开始
-    onRequestAllowed(url, () => {
-      // TODO 记录开始时间
-      setIsStarted(true)
+  const pushRequest = (requestId: string, cb: () => void) => {
+    queueInfo.queue.push({
+      requestId,
+      cb,
+      // promise,
+      // resolve,
+      // reject,
     })
 
-    return () => {
-      // TODO offLoadStart 从队列中移除?
+    if (!queueInfo.processing) {
+      queueInfo.processing = true
+      setTimeout(() => {
+        processQueue()
+      }, 0);
+    }
+  }
+
+  const processQueue = () => {
+    // 当前处理的请求数量小于最大请求数量 && 存在待处理的请求
+    while(queueInfo.current < queueInfo.max && queueInfo.queue.length > 0) {
+      const item = queueInfo.queue.shift();
+      if (item) {
+        
+        // TODO 通知外部, 触发请求开始
+        if (typeof item.cb === 'function') {
+          item.cb()
+        }
+        // TODO 当 item 处理完毕后(成功或失败), current - 1
+
+        queueInfo.current += 1
+      }
+    }
+
+    // TODO 一定时间后再次检查队列, 也许有更好的办法?
+    // queueInfo.processing = false
+    setTimeout(() => {
+      processQueue()
+    }, 100);
+  }
+
+  const finishRequest = (requestId: string) => {
+    queueInfo.current -= 1
+
+    // TODO 是否启动下一次请求
+    // if (!queueInfo.processing) {
+    //   queueInfo.processing = true
+    //   setTimeout(() => {
+    //     processQueue()
+    //   }, 0);
+    // }
+  }
+
+  const removeRequest = (requestId: string) => {
+    queueInfo.queue.some((item, index) => {
+      if (item.requestId === requestId) {
+        queueInfo.queue.splice(index, 1)
+        return true
+      }
+    })
+
+    // TODO 是否移除在处理中请求
+  }
+
+  return {
+    pushRequest,
+    processQueue,
+    finishRequest,
+    removeRequest,
+  }
+}
+
+const picAQueue = createRequestQueue('pic-a.autoimg.cn', 5)
+const picBQueue = createRequestQueue('pic-b.autoimg.cn', 5)
+const picCQueue = createRequestQueue('pic-c.autoimg.cn', 5)
+
+function getRequestQueue(url: string): ReturnType<typeof createRequestQueue> | null {
+  const domain = url.split('/')[2]
+  // return null
+  if (domain === 'pic-a.autoimg.cn') {
+    return picAQueue
+  } else if (domain === 'pic-b.autoimg.cn') {
+    return picBQueue
+  } else if (domain === 'pic-c.autoimg.cn') {
+    return picCQueue
+  } else {
+    return null
+  }
+}
+
+type TImageMeasureData = {
+  url: string;
+  size?: number;
+  queueTime?: number;
+  startTime?: number;
+  endTime?: number;
+}
+const imageMeasures: TImageMeasureData[] = [];
+
+let updaterCount = 0
+
+export function useRequestLimit(url: string) {
+  const [isStarted, setIsStarted] = useState(false)
+
+  const updater = useMemo(() => {
+    updaterCount += 1
+    console.log(updaterCount)
+
+    const queue = getRequestQueue(url)
+    const measureData: TImageMeasureData = {
+      url,
+    }
+
+    const handleRequestStart = () => {
+      // 当前图片请求开始时间
+      measureData.startTime = Date.now()
+
+      console.log('requestStarted')
+      setIsStarted(true)
+    }
+
+    const requestStart = () => {
+      // 没有队列, 直接开始请求
+      if (!queue) {
+        handleRequestStart()
+        return
+      }
+
+      // 当前图片请求入队列时间
+      measureData.queueTime = Date.now()
+
+      console.log('requestQueue')
+      queue?.pushRequest(url, handleRequestStart)
+    }
+
+    const requestSucceeded = () => {
+      // 当前图片请求成功时间
+      measureData.endTime = Date.now()
+      imageMeasures.push(measureData)
+
+      // TODO 暂时用这种办法打印
+      if (imageMeasures.length === 100) {
+        console.log(imageMeasures)
+      }
+
+      console.log('requestSucceeded')
+      queue?.finishRequest(url)
+    }
+  
+    const requestFailed = () => {
+      console.log('requestFailed')
+      queue?.finishRequest(url)
+    }
+
+    const requestCancel = () => {
+      console.log('requestCancel')
+      queue?.removeRequest(url)
+      // TODO ? queue?.finishRequest(url)
+    }
+
+    return {
+      requestStart,
+      requestSucceeded,
+      requestFailed,
+      requestCancel,
     }
   }, [url])
 
   return {
     isStarted,
-    onLoadEnd,
+    updater,
   }
 }

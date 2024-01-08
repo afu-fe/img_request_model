@@ -1,4 +1,5 @@
 import { AllImages } from './AllImages'
+import './data/analysis'
 
 function App() {
   return (
