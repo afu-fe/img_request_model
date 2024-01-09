@@ -1,30 +1,24 @@
-# React + TypeScript + Vite
+# 图片并发实验
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 基本介绍
 
-Currently, two official plugins are available:
+加工好的三组数据
+- `src/data/dazhong1.json`
+- `src/data/dazhong2.json`
+- `src/data/dazhong3.json`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+实验说明
+- 选择数据, 调整 `src/AllImages.tsx` 的 `dataNo` 变量即可
+- 设置并发数, 调整 `src/components/useLimitedRequest.tsx` 的 `maxConcurrent` 变量即可
+    - 5, 每个域名并发数为 5, 
+    - 50, 每个域名并发数为 50, 意味着全量请求
 
-## Expanding the ESLint configuration
+## 测试方法
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+第一步, 修改对应变量
 
-- Configure the top-level `parserOptions` property like this:
+第二步, 运行程序, 进行图片请求
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+第三步, 查看控制台输出结果, `imageMeasures`, 正常情况下应该有 100 条数据
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+第四步, 运行程序, 查看控制台输出结果, 查看 `dazhong1_Base_Middle` 相关内容

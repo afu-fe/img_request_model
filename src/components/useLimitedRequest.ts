@@ -172,13 +172,13 @@ export function useLimitedRequest(url: string) {
       measureData.endTime = Date.now()
       imageMeasures.push(measureData)
 
-      // TODO 暂时用这种办法打印
-      if (imageMeasures.length === 100) {
-        console.log(imageMeasures)
-      }
-
       console.log('requestSucceeded')
       queue?.finishRequest(url)
+
+      // TODO 暂时用这种办法打印
+      if (imageMeasures.length === 100) {
+        console.log('imageMeasures', imageMeasures)
+      }
     }
   
     const requestFailed = () => {
