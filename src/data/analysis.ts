@@ -6,6 +6,14 @@ import dazhong1_Base_1 from './dazhong1_Base_1.json'
 import dazhong1_Base_2 from './dazhong1_Base_2.json'
 import dazhong1_Base_3 from './dazhong1_Base_3.json'
 
+import dazhong2 from './dazhong2.json'
+import dazhong2_A_1 from './dazhong2_A_1.json'
+import dazhong2_A_2 from './dazhong2_A_2.json'
+import dazhong2_A_3 from './dazhong2_A_3.json'
+import dazhong2_Base_1 from './dazhong2_Base_1.json'
+import dazhong2_Base_2 from './dazhong2_Base_2.json'
+import dazhong2_Base_3 from './dazhong2_Base_3.json'
+
 import type { TImageInfo, TMeasureData } from './types'
 import { getAverageNumber, getMiddleNumber } from './utils'
 
@@ -73,5 +81,19 @@ console.log('dazhong1_Base_Average', dazhong1_Base_Average)
 
 const dazhong1_A_Average = calculate(dazhong1, [dazhong1_A_1, dazhong1_A_2, dazhong1_A_3], true)
 console.log('dazhong1_A_Average', dazhong1_A_Average)
+
+
+const dazhong2_Base_Middle = calculate(dazhong2, [dazhong2_Base_1, dazhong2_Base_2, dazhong2_Base_3])
+console.log('dazhong2_Base_Middle', dazhong2_Base_Middle)
+
+const dazhong2_A_Middle = calculate(dazhong2, [dazhong2_A_1, dazhong2_A_2, dazhong2_A_3])
+console.log('dazhong2_A_Middle', dazhong2_A_Middle)
+
+const dazhong2_Base_Average = calculate(dazhong2, [dazhong2_Base_1, dazhong2_Base_2, dazhong2_Base_3], true)
+console.log('dazhong2_Base_Average', dazhong2_Base_Average)
+
+const dazhong2_A_Average = calculate(dazhong2, [dazhong2_A_1, dazhong2_A_2, dazhong2_A_3], true)
+console.log('dazhong2_A_Average', dazhong2_A_Average)
+
 
 

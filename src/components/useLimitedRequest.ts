@@ -105,7 +105,7 @@ export function createRequestQueue(name: string, max: number) {
   }
 }
 
-const maxConcurrent = 50
+const maxConcurrent = 5
 const picAQueue = createRequestQueue('pic-a.autoimg.cn', maxConcurrent)
 const picBQueue = createRequestQueue('pic-b.autoimg.cn', maxConcurrent)
 const picCQueue = createRequestQueue('pic-c.autoimg.cn', maxConcurrent)

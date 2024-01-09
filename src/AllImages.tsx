@@ -19,7 +19,7 @@ function getImageData(num: number): TImageInfo[] {
 // TODO 实验控制参数
 // 哪一组数据: dazhong1, dazhong2, dazhong3
 // 哪一个实验: 基线组, 实验A
-const dataNo = 1;
+const dataNo = 2;
 const imgList = getImageData(dataNo);
 
 export function AllImages() {
