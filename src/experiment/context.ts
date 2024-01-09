@@ -1,4 +1,4 @@
-import { createContext } from 'react'
+import { createContext, useContext } from 'react'
 import type { TImageInfo, TMeasureData } from '../data/types';
 
 // ImageExperimentContextType
@@ -7,39 +7,33 @@ export type TImageExperimentContext = {
   measureData: TMeasureData[];
 }
 
-export const ImageExpirement = createContext<TImageExperimentContext | null>(null)
-
-type TImageExperiment = {
-  imgList: TMeasureData[];
-}
-export function createImageExperiment(config: TImageExperiment) {
-  return {
-    imgList: config.imgList,
-  }
-}
-
-
-// interface CurrentUserContextType {
-//   username: string;
-// }
-
-// const CurrentUserContext = createContext<CurrentUserContextType | null>(null);
 // const CurrentUserContext = createContext<CurrentUserContextType>(
 //   {} as CurrentUserContextType
 // );
+export const ImageExpirement = createContext<TImageExperimentContext | null>(null)
 
-// const useCurrentUser = () => {
-//   const currentUserContext = useContext(CurrentUserContext);
+export type TImageExperimentConfig = {
+  imgList: TImageInfo[];
+}
 
-//   if (!currentUserContext) {
-//     throw new Error(
-//       "useCurrentUser has to be used within <CurrentUserContext.Provider>"
-//     );
-//   }
+export function createImageExperiment(config: TImageExperimentConfig): TImageExperimentContext {
+  return {
+    imgList: config.imgList,
+    measureData: [],
+  }
+}
 
-//   return currentUserContext;
-// };
+export function useImageExperiment() {
+  const context = useContext(ImageExpirement)
 
+  if (!context) {
+    throw new Error('useImageExperiment must be used within ImageExperimentProvider')
+  }
+
+  // TODO more logic
+
+  return { context }
+}
 
 // const App = () => {
 //   const [currentUser, setCurrentUser] = useState<CurrentUserContextType>({

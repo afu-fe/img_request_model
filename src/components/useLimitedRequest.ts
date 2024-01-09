@@ -1,10 +1,5 @@
 import { useMemo, useState } from "react";
 
-// TODO useLimitedRequest
-// 控制并发
-// 记录每张图片的时间
-// 全部请求完成后打印时间
-
 type TQueueItem = {
   requestId: string;
   cb: () => void;
@@ -74,10 +69,12 @@ export function createRequestQueue(name: string, max: number) {
     // queueInfo.processing = false
     setTimeout(() => {
       processQueue()
-    }, 100);
+    }, 10);
   }
 
   const finishRequest = (requestId: string) => {
+    requestId
+
     queueInfo.current -= 1
 
     // TODO 是否启动下一次请求
@@ -108,7 +105,7 @@ export function createRequestQueue(name: string, max: number) {
   }
 }
 
-const maxConcurrent = 5
+const maxConcurrent = 50
 const picAQueue = createRequestQueue('pic-a.autoimg.cn', maxConcurrent)
 const picBQueue = createRequestQueue('pic-b.autoimg.cn', maxConcurrent)
 const picCQueue = createRequestQueue('pic-c.autoimg.cn', maxConcurrent)
@@ -135,16 +132,20 @@ type TImageMeasureData = {
 }
 const imageMeasures: TImageMeasureData[] = [];
 
-export function useRequestLimit(url: string) {
+// TODO useRequestController
+// 控制并发
+// 记录每张图片的时间
+// 全部请求完成后打印时间
+
+export function useLimitedRequest(url: string) {
   const [isStarted, setIsStarted] = useState(false)
 
   const updater = useMemo(() => {
     const queue = getRequestQueue(url)
-    const measureData: TImageMeasureData = {
-      url,
-    }
+    const measureData: TImageMeasureData = { url }
 
     const handleRequestStart = () => {
+      // TODO 这个 startTime 是否能够准确表达图片开始请求的时间
       // 当前图片请求开始时间
       measureData.startTime = Date.now()
 
@@ -181,12 +182,12 @@ export function useRequestLimit(url: string) {
     }
   
     const requestFailed = () => {
-      console.log('requestFailed')
+      console.warn('requestFailed')
       queue?.finishRequest(url)
     }
 
     const requestCancel = () => {
-      console.log('requestCancel')
+      console.warn('requestCancel')
       queue?.removeRequest(url)
       // TODO ? queue?.finishRequest(url)
     }

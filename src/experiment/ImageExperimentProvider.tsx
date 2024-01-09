@@ -1,11 +1,13 @@
-import { ImageExpirement } from "./context"
+import { ImageExpirement, TImageExperimentContext } from "./context"
 
 type TImageExperimentProviderProps = {
   children: React.ReactNode;
-  experiement: any;
+  experiement: TImageExperimentContext;
 }
 
 export const ImageExperimentProvider: React.FC<TImageExperimentProviderProps> = ({ children, experiement }) => {
+  // TODO more logic
+
   return (
     <ImageExpirement.Provider value={experiement}>
       {children}

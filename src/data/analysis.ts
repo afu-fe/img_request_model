@@ -1,13 +1,30 @@
 import dazhong1 from './dazhong1.json'
-import dazhong1_A_1 from './dazhong1-A-1.json'
-import dazhong1_A_2 from './dazhong1-A-2.json'
-import dazhong1_A_3 from './dazhong1-A-3.json'
-import dazhong1_Base_1 from './dazhong1-Base-1.json'
-import dazhong1_Base_2 from './dazhong1-Base-2.json'
-import dazhong1_Base_3 from './dazhong1-Base-3.json'
+import dazhong1_A_1 from './dazhong1_A_1.json'
+import dazhong1_A_2 from './dazhong1_A_2.json'
+import dazhong1_A_3 from './dazhong1_A_3.json'
+import dazhong1_Base_1 from './dazhong1_Base_1.json'
+import dazhong1_Base_2 from './dazhong1_Base_2.json'
+import dazhong1_Base_3 from './dazhong1_Base_3.json'
 
 import type { TImageInfo, TMeasureData } from './types'
 import { getAverageNumber, getMiddleNumber } from './utils'
+
+function checkData(data: TImageInfo[]) {
+  const set = new Set<string>()
+  let counter = 0
+
+  data.forEach((item) => {
+    if (set.has(item.url)) {
+      counter += 1
+    } else {
+      set.add(item.url)
+    }
+  })
+
+  console.log('重复的 url 数量', counter)
+}
+
+checkData(dazhong1)
 
 function calculate(base: TImageInfo[], data: TMeasureData[][], isAverage = false) {
   const result: number[] = []
@@ -15,6 +32,7 @@ function calculate(base: TImageInfo[], data: TMeasureData[][], isAverage = false
   for (let i = 0; i < base.length; i++) {
     // 计算每一组的平均值
     const baseItem = base[i]
+    // console.log('base', baseItem.url)
     const costArray: number[] = []
     data.forEach((group) => {
       const item = group.find((item) => {
@@ -23,10 +41,14 @@ function calculate(base: TImageInfo[], data: TMeasureData[][], isAverage = false
         }
       })
       if (item) {
+        // console.log('group', item.url)
         const cost = item.endTime - item.startTime
         costArray.push(cost)
+      } else {
+        console.error('not found', baseItem.url)
       }
     })
+    // console.log('costArray', costArray)
     const averageCost = getAverageNumber(costArray)
 
     result.push(averageCost)
@@ -40,15 +62,16 @@ function calculate(base: TImageInfo[], data: TMeasureData[][], isAverage = false
 
 }
 
+const dazhong1_Base_Middle = calculate(dazhong1, [dazhong1_Base_1, dazhong1_Base_2, dazhong1_Base_3])
+console.log('dazhong1_Base_Middle', dazhong1_Base_Middle)
+
 const dazhong1_A_Middle = calculate(dazhong1, [dazhong1_A_1, dazhong1_A_2, dazhong1_A_3])
 console.log('dazhong1_A_Middle', dazhong1_A_Middle)
 
-const dazhong1_Base_Middle = calculate(dazhong1, [dazhong1_Base_1, dazhong1_Base_2, dazhong1_Base_3])
-console.log('dazhong1_Base_Middle', dazhong1_Base_Middle)
+const dazhong1_Base_Average = calculate(dazhong1, [dazhong1_Base_1, dazhong1_Base_2, dazhong1_Base_3], true)
+console.log('dazhong1_Base_Average', dazhong1_Base_Average)
 
 const dazhong1_A_Average = calculate(dazhong1, [dazhong1_A_1, dazhong1_A_2, dazhong1_A_3], true)
 console.log('dazhong1_A_Average', dazhong1_A_Average)
 
-const dazhong1_Base_Average = calculate(dazhong1, [dazhong1_Base_1, dazhong1_Base_2, dazhong1_Base_3], true)
-console.log('dazhong1_Base_Average', dazhong1_Base_Average)
 
