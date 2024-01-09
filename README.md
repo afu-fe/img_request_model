@@ -19,6 +19,6 @@
 
 第二步, 运行程序, 进行图片请求
 
-第三步, 查看控制台输出结果, `imageMeasures`, 正常情况下应该有 100 条数据
+第三步, 查看控制台输出结果, `imageMeasures`, 正常情况下应该有 100 条数据, 将其复制到 `src/data/` 的对应文件中, 比如 `dazhong1_Base_1.json` 中
 
 第四步, 运行程序, 查看控制台输出结果, 查看 `dazhong1_Base_Middle` 相关内容
