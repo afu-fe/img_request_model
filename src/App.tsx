@@ -1,4 +1,6 @@
 import { AllImages } from './AllImages'
+
+import './data/generagteData'
 import './data/analysis'
 
 function App() {

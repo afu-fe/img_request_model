@@ -12,10 +12,9 @@ type AutoRnImageProps = {
 
 
 export function AutoRnImage(props: AutoRnImageProps) {
-  const { state } = useRequestLimit(props.imgUrl)
+  const { isStarted } = useRequestLimit(props.imgUrl)
 
-  if (state) {
-    console.log('图片开始请求了')
+  if (isStarted) {
     return (
       <AHRNImageView
         data={{ uri: props.imgUrl, defaultUri: props.defaultImgUrl }}
@@ -23,7 +22,6 @@ export function AutoRnImage(props: AutoRnImageProps) {
       />
     )
   } else {
-    console.log('图片还在队列中')
     return <div>图片还在队列中</div>
   }
 

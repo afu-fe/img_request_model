@@ -1,11 +1,11 @@
 // import { ImageExpirement } from './components/ImageExperiment';
 import { WebImage } from './components/WebImage';
-import { TImageInfo } from './data/data';
+import { TImageInfo } from './data/generagteData';
 // import dazhongData from './data/dazhong1.json';
 import dazhongData from './data/dazhong2.json';
 // import dazhongData from './data/dazhong3.json';
 
-import { ImageExperimentProvider, createImageExperiment } from './components/ImageExperiment';
+import { ImageExperimentProvider, createImageExperiment } from './experiment';
 
 // TODO 实验控制参数
 // 哪一组数据: dazhong1, dazhong2, dazhong3

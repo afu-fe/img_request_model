@@ -1,5 +1,10 @@
 import { useMemo, useState } from "react";
 
+// TODO useLimitedRequest
+// 控制并发
+// 记录每张图片的时间
+// 全部请求完成后打印时间
+
 type TQueueItem = {
   requestId: string;
   cb: () => void;
@@ -103,13 +108,13 @@ export function createRequestQueue(name: string, max: number) {
   }
 }
 
-const picAQueue = createRequestQueue('pic-a.autoimg.cn', 5)
-const picBQueue = createRequestQueue('pic-b.autoimg.cn', 5)
-const picCQueue = createRequestQueue('pic-c.autoimg.cn', 5)
+const maxConcurrent = 5
+const picAQueue = createRequestQueue('pic-a.autoimg.cn', maxConcurrent)
+const picBQueue = createRequestQueue('pic-b.autoimg.cn', maxConcurrent)
+const picCQueue = createRequestQueue('pic-c.autoimg.cn', maxConcurrent)
 
 function getRequestQueue(url: string): ReturnType<typeof createRequestQueue> | null {
   const domain = url.split('/')[2]
-  // return null
   if (domain === 'pic-a.autoimg.cn') {
     return picAQueue
   } else if (domain === 'pic-b.autoimg.cn') {
@@ -130,15 +135,10 @@ type TImageMeasureData = {
 }
 const imageMeasures: TImageMeasureData[] = [];
 
-let updaterCount = 0
-
 export function useRequestLimit(url: string) {
   const [isStarted, setIsStarted] = useState(false)
 
   const updater = useMemo(() => {
-    updaterCount += 1
-    console.log(updaterCount)
-
     const queue = getRequestQueue(url)
     const measureData: TImageMeasureData = {
       url,

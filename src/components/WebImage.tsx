@@ -1,19 +1,8 @@
 import { useEffect } from "react";
-import { TImageInfo } from "../data/data";
-import { useRequestLimit } from "./image/useRequestLimit";
-
-// TODO useRequestModel
-// 控制并发
-// 记录每张图片的时间
-// 全部请求完成后打印时间
+import { TImageInfo } from "../data/generagteData";
+import { useRequestLimit } from "./useRequestLimit";
 
 export function WebImage(data: TImageInfo) {
-  // domain config?
-  // setQueue(data.url)
-  // onQueueEnd(data.url, () => {
-  //   setIsStarted(true)
-  // })
-
   const { isStarted, updater } = useRequestLimit(data.url)
 
   useEffect(() => {
@@ -27,7 +16,6 @@ export function WebImage(data: TImageInfo) {
   if (!isStarted) {
     return <div>图片还在队列中</div>
   } else {
-    console.log('render image', isStarted)
     return <img
       style={{maxWidth: '500px'}}
       src={data.url} alt="logo"

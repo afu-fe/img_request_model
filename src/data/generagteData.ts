@@ -1,22 +1,19 @@
 import dazhong from './dazhong.json'
+import type { TSourceInfo, TImageInfo } from './types';
+import { getRandomInt, shuffle } from './utils';
 
-export type TImageInfo = {
-  hostname: string;
-  url: string;
-  path: string;
-  contentType: string;
-  size: number;
-}
-
-export function getImageData(): TImageInfo[] {
+// 生成图片数据, 需满足如下条件
+// 1. 随机选择一个 host, 大体满足各 1/3 的概率
+// 2. 一律使用 https 协议, 以保证发出 H2 请求
+// 3. 大图小图均有
+export function generateImageData(source: TSourceInfo[]): TImageInfo[] {
   const data: TImageInfo[] = []
 
-  if (!Array.isArray(dazhong)) {
-    throw new Error('dazhong is not Array')
+  if (!Array.isArray(source)) {
+    throw new Error('source is not Array')
   }
 
-  
-  dazhong.forEach(item => {
+  source.forEach(item => {
     const hostnames = ['pic-a.autoimg.cn', 'pic-b.autoimg.cn', 'pic-c.autoimg.cn']
 
     if (!hostnames.includes(item.hostname)) {
@@ -29,8 +26,8 @@ export function getImageData(): TImageInfo[] {
       return
     }
 
-    shuffle(hostnames)
-    const hostname = hostnames[0]
+    const random = getRandomInt(0, 2)
+    const hostname = hostnames[random]
 
     if (data.length >= 100) {
       return false
@@ -48,11 +45,9 @@ export function getImageData(): TImageInfo[] {
   return data 
 }
 
-export function shuffle<T>(array: T[]) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-  }
-}
+const data = generateImageData(dazhong as TSourceInfo[])
+
+// 打乱顺序
+shuffle(data)
+
+console.log('generateImageData', data)

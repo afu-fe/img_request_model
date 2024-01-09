@@ -21,8 +21,6 @@ type AHRNImageViewProps = {
 }
 
 export function AHRNImageView(props: AHRNImageViewProps) {
-  console.log(props)
-
   return (
     <img src={props.data.uri} />
   )
